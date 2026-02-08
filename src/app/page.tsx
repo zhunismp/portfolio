@@ -245,23 +245,23 @@ export default function Home() {
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
 
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 bg-clip-text text-transparent animate-[gradient-shift_8s_ease_infinite] bg-[length:200%_auto]">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 bg-clip-text text-transparent animate-[gradient-shift_8s_ease_infinite] bg-[length:200%_auto] tracking-tight">
             {displayedName}
           </h1>
 
-          <p className="text-2xl md:text-3xl text-slate-300 mb-8 font-light">
+          <p className="text-xl md:text-3xl text-slate-300 mb-8 font-light">
             Software Engineer
           </p>
 
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+          <p className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
             Passionate software engineer with 1+ years experience building scalable web applications
             and distributed systems. Specialized in modern development and cloud architecture.
           </p>
 
-          <div className="flex justify-center mb-12">
-            <span className="px-5 py-2.5 rounded-full bg-slate-900/50 border border-slate-700/50 text-slate-300 backdrop-blur-md flex items-center gap-2 hover:border-purple-500/50 transition-colors duration-300 group cursor-default">
+          <div className="flex justify-center mb-12 w-full px-4">
+            <span className="px-5 py-2.5 rounded-full bg-slate-900/50 border border-slate-700/50 text-slate-300 backdrop-blur-md flex flex-wrap justify-center items-center gap-2 hover:border-purple-500/50 transition-colors duration-300 group cursor-default max-w-full">
               <span className="text-xl group-hover:scale-110 transition-transform duration-300">🚀</span>
-              <span className="font-medium bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-transparent">
+              <span className="font-medium bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-transparent text-center text-sm md:text-base">
                 Eager to learn, fast to adapt, obsessed with how things work.
               </span>
             </span>
@@ -333,11 +333,9 @@ export default function Home() {
               </div>
             </a>
 
-            {/* Phone */}
             <a href="tel:+66616616514"
               className="group relative bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-1">
               <div className="flex items-center gap-4">
-                {/* Icon Placeholder - 48x48px */}
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-6 h-6 text-white" />
                 </div>
@@ -351,7 +349,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="px-6 py-8 border-t border-slate-800/50">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-slate-400 text-sm">
