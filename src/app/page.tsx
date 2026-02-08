@@ -145,7 +145,6 @@ function ExperienceSection() {
     {
       company: 'LSEG',
       role: 'Associate Software Engineer',
-      period: 'June 2025 - Present',
       description: 'Built and maintain time-series data platform for financial market data',
       logo: '/lseg-logo.png',
       gradient: 'from-pink-500/10 to-orange-500/10',
@@ -156,7 +155,6 @@ function ExperienceSection() {
     {
       company: 'Agoda',
       role: 'Software Engineer Intern',
-      period: 'June 2024 - April 2025',
       description: 'Building flights inspector tool for visualize pricing process of flights at Agoda',
       logo: '/agoda-logo.svg',
       gradient: 'from-purple-500/10 to-blue-500/10',
@@ -167,7 +165,6 @@ function ExperienceSection() {
     {
       company: '100X',
       role: 'Full Stack Developer Intern',
-      period: 'January 2025 - March 2025',
       description: 'Built BFF application to bridge frontend and trading engine microservices',
       logo: '/100x-logo.jpeg',
       gradient: 'from-blue-500/10 to-cyan-500/10',
@@ -207,7 +204,6 @@ function ExperienceSection() {
 
               <h3 className="text-2xl font-bold text-white mb-2 relative z-10">{exp.company}</h3>
               <p className={`${exp.textGradient} mb-2 font-medium relative z-10`}>{exp.role}</p>
-              <p className="text-slate-500 text-sm mb-4 font-mono relative z-10">{exp.period}</p>
               <p className="text-slate-400 text-sm leading-relaxed relative z-10">{exp.description}</p>
             </div>
           ))}
