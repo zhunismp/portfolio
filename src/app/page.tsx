@@ -145,7 +145,7 @@ function ExperienceSection() {
     {
       company: 'LSEG',
       role: 'Associate Software Engineer',
-      description: 'Built and maintain time-series data platform for financial market data',
+      description: 'Building historical time-series data services',
       logo: '/lseg-logo.png',
       gradient: 'from-pink-500/10 to-orange-500/10',
       borderHover: 'hover:border-pink-500/50',
@@ -155,7 +155,7 @@ function ExperienceSection() {
     {
       company: 'Agoda',
       role: 'Software Engineer Intern',
-      description: 'Building flights inspector tool for visualize pricing process of flights at Agoda',
+      description: 'Built flights inspector tool for visualize pricing process of flights at Agoda',
       logo: '/agoda-logo.svg',
       gradient: 'from-purple-500/10 to-blue-500/10',
       borderHover: 'hover:border-purple-500/50',
