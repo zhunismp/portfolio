@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { m, useScroll, useTransform } from 'motion/react';
+import * as m from 'motion/react-m';
+import { useScroll, useTransform } from 'motion/react';
 
 import { site } from '@/data/site';
 
