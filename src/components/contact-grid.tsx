@@ -1,5 +1,7 @@
 import { Linkedin, Github, Mail, Phone, ArrowUpRight } from 'lucide-react';
 
+import { Reveal } from '@/components/reveal';
+import { PressLink } from '@/components/press-link';
 import { contacts, type ContactIcon } from '@/data/contacts';
 
 /** The data layer stores a string key; this server component owns the mapping. */
@@ -19,13 +21,16 @@ const icons: Record<ContactIcon, typeof Linkedin> = {
  */
 export function ContactGrid() {
   return (
-    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-separator sm:grid-cols-2">
+    <Reveal className="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-separator sm:grid-cols-2">
       {contacts.map(({ label, value, href, icon, external }) => {
         const Icon = icons[icon];
         return (
-          <a
+          /* scale 0.99, not 0.97: the press delta shrinks as the surface grows,
+             and 0.97 on a full-width row reads as a glitch rather than a press. */
+          <PressLink
             key={label}
             href={href}
+            scale={0.99}
             {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             className="contact-row group flex items-center gap-4 bg-surface px-6 py-6 transition-colors hover:bg-surface-2"
           >
@@ -42,9 +47,9 @@ export function ContactGrid() {
               className="h-4 w-4 shrink-0 text-ink-faint transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               aria-hidden="true"
             />
-          </a>
+          </PressLink>
         );
       })}
-    </div>
+    </Reveal>
   );
 }

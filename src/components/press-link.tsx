@@ -1,7 +1,6 @@
 'use client';
 
-import * as m from 'motion/react-m';
-import { useReducedMotion, type HTMLMotionProps } from 'motion/react';
+import { m, useReducedMotion, type HTMLMotionProps } from 'motion/react';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 /** motion allows a MotionValue as children; this component only ever takes nodes. */
