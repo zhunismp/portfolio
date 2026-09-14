@@ -1,22 +1,17 @@
 import { LogoPlate } from '@/components/logo-plate';
-import { Reveal } from '@/components/reveal';
 import { techStacks, categoryLabels, techCategories } from '@/data/tech';
 
 /**
  * Kept from the previous design: a label column beside a wrapping chip list,
  * one hairline-separated row per category. It already reads like a macOS
  * Settings pane, so the restyle is colour and type only.
- *
- * Stagger is per ROW, not per chip. Twenty chips at 0.06s each would be 1.2s of
- * cascade before the last one appears — polish that costs the user time.
  */
 export function TechStack() {
   return (
     <div className="border-t border-separator">
-      {techCategories.map((category, i) => (
-        <Reveal
+      {techCategories.map((category) => (
+        <div
           key={category}
-          index={i}
           className="grid grid-cols-1 gap-4 border-b border-separator py-7 md:grid-cols-[180px_1fr] md:gap-8"
         >
           <h3 className="text-label font-mono uppercase text-ink-muted md:pt-2.5">
@@ -33,7 +28,7 @@ export function TechStack() {
               </li>
             ))}
           </ul>
-        </Reveal>
+        </div>
       ))}
     </div>
   );

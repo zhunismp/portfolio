@@ -219,34 +219,20 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   4. LEGACY MOTION — page.tsx still uses .reveal. DELETE IN PHASE 7.
+   4. UTILITIES
    ════════════════════════════════════════════════════════════════════ */
-@keyframes fadeInUp {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
 
-  to {
-    /* Exactly one set of four. The frame after the reset is identical to the
-       frame before it, which is what makes the loop seamless. */
-    transform: translate3d(-25%, 0, 0);
-  }
-}
-
-/* ── Card: logo at rest, details on hover ── */
-.exp-card {
-  position: relative;
-  display: flex;
-  height: 15rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* Visually hidden but announced. Used for landmark-naming headings. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  padding: 1.25rem;
-  box-shadow: var(--elev-card);
-  transition: box-shadow 300ms var(--ease-spring);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .exp-card__logo {
@@ -318,80 +304,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .skip-link {
-    transition: none;
-  }
-
-}
-
-/* ── Static fallback: no marquee ──
-   Two independent reasons to drop the sliding track, so the rules are shared.
-
-   Reduced motion: a slow perpetual loop is the clearest single thing this
-   preference exists to stop, so the marquee is replaced rather than eased.
-
-   Narrow viewports: only about one card fits, so sliding means waiting to see
-   the other two; there is no hover to reveal details with, so they are already
-   shown; and the edge fade eats a meaningful fraction of a phone's width.
-   Stacking is strictly better there. */
-@media (prefers-reduced-motion: reduce), (max-width: 39.99rem) {
-  .marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
-    overflow: visible;
-  }
-
-  .marquee__track {
-    animation: none;
-    display: grid;
-    width: 100%;
-    gap: var(--marquee-gap);
-  }
-
-  /* Clones are removed from layout, not just hidden, so the remaining set is
-     the only thing the grid has to place. */
-  .marquee__set[aria-hidden='true'] {
-    display: none;
-  }
-
-  .marquee__set {
-    display: grid;
-    width: 100%;
-    grid-template-columns: 1fr;
-    gap: var(--marquee-gap);
-    padding-right: 0;
-  }
-
-  .marquee__item {
-    width: auto;
-  }
-
-  .exp-card {
-    height: auto;
-    min-height: 15rem;
-    justify-content: flex-start;
-  }
-
-  .exp-card__logo,
-  .exp-card__info {
-    transition: none;
-  }
-
-  .exp-card__logo {
-    transform: scale(0.5);
-  }
-
-  .exp-card__info {
-    position: static;
-    opacity: 1;
-    transform: none;
   }
 }
 
