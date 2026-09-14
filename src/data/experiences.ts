@@ -9,7 +9,7 @@ export const experiences: Experience[] = [
   {
     company: 'IBM',
     role: 'Associate Software Engineer',
-    description: 'Maintain infrastructure and support deployment for IBM\'s Client',
+    description: 'Maintain infrastructure and support deployment for IBM\'s client',
     logo: '/ibm-logo.png',
   },
   {
