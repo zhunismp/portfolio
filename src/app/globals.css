@@ -284,52 +284,30 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   5. UTILITIES
+   6. ACCESSIBILITY PREFERENCES
+   Three independent signals, each with a real fallback rather than a
+   blanket override.
    ════════════════════════════════════════════════════════════════════ */
 
-/* Visually hidden but announced. Used for landmark-naming headings. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Skip link — required now that a sticky header precedes all content. */
-.skip-link {
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 60;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  padding: 0.5rem 1rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--ink);
-  box-shadow: var(--elev-lg);
-  transform: translateY(-200%);
-}
-
-.skip-link:focus-visible {
-  transform: translateY(0);
-}
-
+/* ── Reduced motion ──
+   Deliberately NOT the blanket `* { transition-duration: .01ms !important }`
+   reset. Reduced motion means a gentler, non-vestibular equivalent — not the
+   removal of all feedback. A contact row that gives no response at all on
+   press is a regression, not an accommodation. So: transforms and springs go,
+   colour and opacity cross-fades stay. useReducedMotion() in JS is
+   authoritative; these rules cover the no-hydration window. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-}
 
-/* With motion reduced but room to spare, keep the original three-up grid. */
-@media (prefers-reduced-motion: reduce) and (min-width: 40rem) {
-  .marquee__set {
-    grid-template-columns: repeat(3, 1fr);
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .skip-link {
+    transition: none;
   }
 
   *,
