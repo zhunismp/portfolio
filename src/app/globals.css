@@ -1,45 +1,226 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════════
+   1. SCHEME-VARYING TOKENS
+   Only values that change between light and dark live in :root.
+   Radii, static shadows, fonts and the type scale are @theme literals.
+
+   NOTE: scheme-varying shadows are named --elev-* here, NOT --shadow-*.
+   Tailwind owns the --shadow-* namespace; `--shadow-md: var(--shadow-md)`
+   inside @theme would self-reference and silently break.
+   ════════════════════════════════════════════════════════════════════ */
 :root {
-  --background: #f7f6f3;
-  /* Paper / off-white */
+  color-scheme: light dark;
+
+  /* Surfaces — Apple neutral ramp */
+  --canvas: #fbfbfd;
   --surface: #ffffff;
-  --foreground: #1a1a18;
+  --surface-2: #f5f5f7;
+  --plate: #f5f5f7;
+
   /* Ink */
-  --muted: #6b6b66;
-  /* Muted text */
-  --border: #e4e2dc;
-  /* Hairline */
-  --accent: #b91c1c;
-  /* Single accent (red) */
+  --ink: #1d1d1f;
+  --ink-muted: #6e6e73;
+  --ink-faint: #a1a1a6;
+
+  /* Hairlines */
+  --separator: rgba(0, 0, 0, 0.08);
+  --separator-strong: rgba(0, 0, 0, 0.16);
+
+  /* Accent — INTERACTIVE ONLY (links, pill, focus ring, hero eyebrow) */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-ink: #ffffff;
+
+  /* Glass — heavy weight: structural chrome (nav only) */
+  --glass-heavy-bg: rgba(251, 251, 253, 0.72);
+  --glass-heavy-blur: 20px;
+  --glass-heavy-saturate: 180%;
+  --glass-heavy-highlight: rgba(255, 255, 255, 0.6);
+
+  /* Glass — light weight: small chips over MEDIA only */
+  --glass-light-bg: rgba(255, 255, 255, 0.55);
+  --glass-light-blur: 12px;
+  --glass-light-saturate: 160%;
+
+  /* Scroll-edge mask */
+  --glass-edge-blur: 6px;
+  --glass-edge-height: 1.5rem;
+
+  /* Elevation — soft, low-alpha, y-biased */
+  --elev-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --elev-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --elev-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --elev-nav: 0 1px 24px rgba(0, 0, 0, 0.06);
+
+  /* Chrome metrics */
+  --nav-h: 52px;
+
+  /* ── Legacy aliases: keep page.tsx compiling through phases 1-3.
+        DELETE IN PHASE 7. ── */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --muted: var(--ink-muted);
+  --border: var(--separator);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #000000;
+    --surface: #1d1d1f;
+    --surface-2: #161617;
+    /* Plate stays LIGHT so black/unfilled logos survive on #000 */
+    --plate: #dedee3;
+
+    --ink: #f5f5f7;
+    --ink-muted: #86868b;
+    --ink-faint: #6e6e73;
+
+    --separator: rgba(255, 255, 255, 0.1);
+    --separator-strong: rgba(255, 255, 255, 0.18);
+
+    --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --accent-ink: #ffffff;
+
+    --glass-heavy-bg: rgba(0, 0, 0, 0.72);
+    --glass-heavy-highlight: rgba(255, 255, 255, 0.08);
+    --glass-light-bg: rgba(28, 28, 30, 0.55);
+
+    /* Drop shadows are near-invisible on #000. Substitute a hairline ring so
+       consumers get the correct depth MECHANISM per scheme, not a dead value. */
+    --elev-card: 0 0 0 1px var(--separator);
+    --elev-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+    --elev-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
+    --elev-nav: 0 1px 0 var(--separator);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   2. THEME BRIDGE
+   `inline` is load-bearing: it makes bg-canvas emit
+   `background-color: var(--canvas)` resolved at the element rather than
+   snapshotting the light hex. Without it dark mode does nothing.
+   ════════════════════════════════════════════════════════════════════ */
 @theme inline {
-  --color-background: var(--background);
+  --color-canvas: var(--canvas);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-plate: var(--plate);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-separator: var(--separator);
+  --color-separator-strong: var(--separator-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+
+  /* Legacy colour aliases — DELETE IN PHASE 7 */
+  --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
-  --color-accent: var(--accent);
 
-  --font-sans: var(--font-space);
-  --font-display: var(--font-archivo);
-  --font-mono: var(--font-mono);
+  /* Fonts. -apple-system first: Safari maps it through SF's optical-sizing
+     switch (SF Pro Text < 20px, SF Pro Display above) automatically. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  /* Legacy: page.tsx uses font-display. DELETE IN PHASE 7. */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
+
+  /* ── Type scale: tracking and leading are size-specific.
+        Negative tracking as size grows, positive at small sizes. ── */
+  --text-display: clamp(2.75rem, 8vw, 5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.032em;
+  --text-display--font-weight: 600;
+
+  --text-h1: clamp(2rem, 5vw, 3rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: clamp(1.5rem, 3.2vw, 2.25rem);
+  --text-h2--line-height: 1.12;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.012em;
+  --text-h3--font-weight: 600;
+
+  --text-body-lg: clamp(1.0625rem, 1.6vw, 1.3125rem);
+  --text-body-lg--line-height: 1.5;
+  --text-body-lg--letter-spacing: -0.008em;
+  --text-body-lg--font-weight: 400;
+
+  /* 17px — Apple's canonical body size */
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.53;
+  --text-body--letter-spacing: -0.004em;
+  --text-body--font-weight: 400;
+
+  --text-caption: 0.9375rem;
+  --text-caption--line-height: 1.47;
+  --text-caption--letter-spacing: 0em;
+
+  --text-footnote: 0.8125rem;
+  --text-footnote--line-height: 1.38;
+  --text-footnote--letter-spacing: 0.004em;
+
+  /* Mono eyebrow. 0.08em, not the 0.3em of the old editorial design. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.08em;
+  --text-label--font-weight: 500;
+
+  /* Radii — scheme-invariant, so literals here only */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 980px;
+
+  /* Shadows — bridged from the scheme-varying --elev-* set */
+  --shadow-card: var(--elev-card);
+  --shadow-md: var(--elev-md);
+  --shadow-lg: var(--elev-lg);
+  --shadow-nav: var(--elev-nav);
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   3. BASE
+   ════════════════════════════════════════════════════════════════════ */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-space), -apple-system, BlinkMacSystemFont, sans-serif;
-  min-height: 100dvh;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* Respect the user's text-size setting rather than pinning a px value */
+  font-size: 100%;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
 }
 
-/* Subtle, single-purpose section reveal */
+/* Anchor targets clear the sticky nav */
+[id] {
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   4. LEGACY MOTION — page.tsx still uses .reveal. DELETE IN PHASE 7.
+   ════════════════════════════════════════════════════════════════════ */
 @keyframes fadeInUp {
   from {
     opacity: 0;

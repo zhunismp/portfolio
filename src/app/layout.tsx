@@ -1,28 +1,18 @@
-import type { Metadata } from "next";
-import { Archivo, Space_Grotesk, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Kobkit Ruangsuriyakij — Software Engineer",
+  title: 'Kobkit Ruangsuriyakij — Software Engineer',
   description:
-    "Software engineer building scalable web applications and distributed systems.",
+    'Software engineer building scalable web applications and distributed systems.',
+};
+
+export const viewport: Viewport = {
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbfbfd' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
 };
 
 export default function RootLayout({
@@ -32,11 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${archivo.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
