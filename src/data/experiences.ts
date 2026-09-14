@@ -7,12 +7,6 @@ export type Experience = {
 
 export const experiences: Experience[] = [
   {
-    company: 'IBM',
-    role: 'Associate Software Engineer',
-    description: 'Maintain infrastructure and support deployment for IBM\'s client',
-    logo: '/ibm-logo.png',
-  },
-  {
     company: 'LSEG',
     role: 'Associate Software Engineer',
     description: 'Built and maintain time-series data platform for financial market data',
