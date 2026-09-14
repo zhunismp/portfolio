@@ -35,7 +35,7 @@ export default function ProjectsPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-body font-medium text-accent"
                 >
-                  <Github className="h-4 w-4" aria-hidden="true" />
+                  <Github className="h-4 w-4" />
                   Browse GitHub
                 </a>
                 <Link href="/" className="text-body font-medium text-accent">
@@ -97,7 +97,7 @@ export default function ProjectsPage() {
                         className="inline-flex items-center gap-1 text-caption font-medium text-accent"
                       >
                         Visit
-                        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        <ArrowUpRight className="h-3.5 w-3.5" />
                       </a>
                     ) : null}
                     {project.repo ? (
@@ -107,7 +107,7 @@ export default function ProjectsPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-caption font-medium text-ink-muted transition-colors hover:text-ink"
                       >
-                        <Github className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Github className="h-3.5 w-3.5" />
                         Source
                       </a>
                     ) : null}

@@ -13,8 +13,10 @@ import { experiences } from '@/data/experiences';
  * it by one, which keeps the visible area covered up to a ~3000px viewport. Two
  * repeats would leave a gap on any screen wider than one set.
  *
- * Only the first set is real content. The rest are aria-hidden, so a screen
- * reader hears each company once rather than four times.
+ * Only the first set is real content; the rest are marked data-clone. That
+ * attribute is load-bearing, not descriptive: the narrow-viewport rule in
+ * globals.css keys off it to drop the clones from layout, and without it the
+ * stacked phone layout would render all four sets — twelve cards.
  *
  * The animation is CSS, not motion. A linear infinite loop has nothing to
  * interrupt and no velocity to inherit, so a spring would buy nothing — and
@@ -31,7 +33,7 @@ export function ExperienceMarquee() {
           <ul
             key={setIndex}
             className="marquee__set"
-            {...(setIndex > 0 ? { 'aria-hidden': true } : {})}
+            {...(setIndex > 0 ? { 'data-clone': '' } : {})}
           >
             {experiences.map((exp) => (
               <li key={exp.company} className="marquee__item">
