@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
 import './globals.css';
 
@@ -24,6 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        <SiteNav />
         <main id="main">{children}</main>
         <SiteFooter />
       </body>
