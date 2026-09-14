@@ -1,3 +1,11 @@
 name = "portfolio"
 compatibility_date = "2026-02-07"
+
+# `next build` with output: 'export' writes here. This previously pointed at
+# .vercel/output/static, the layout produced by @cloudflare/next-on-pages — a
+# package that was never in package.json, so the deploy was resolving to an
+# empty directory.
 pages_build_output_dir = "out"
+
+# nodejs_compat is no longer needed: nothing runs on the edge, the output is
+# static files only.

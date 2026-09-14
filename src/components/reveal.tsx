@@ -1,7 +1,11 @@
 'use client';
 
 import { useRef, type ReactNode } from 'react';
-import { m, useInView, useReducedMotion } from 'motion/react';
+// `m` comes from the minimal entrypoint. Importing it from the `motion/react`
+// barrel drags in the full-featured `motion` component, which references every
+// feature including drag and pan — 37 kB gz of code this site never uses.
+import * as m from 'motion/react-m';
+import { useInView, useReducedMotion } from 'motion/react';
 
 import { REVEAL_Y, spring, staggerDelay } from '@/lib/springs';
 
