@@ -1,100 +1,17 @@
 import Image from 'next/image';
-import { Linkedin, Github, Mail, Phone, ArrowUpRight, ArrowDown } from 'lucide-react';
+import { Linkedin, Github, Mail, Phone, ArrowUpRight } from 'lucide-react';
 
-type TechCategory = 'frontend' | 'backend' | 'database' | 'devops' | 'tools';
+import { profile } from '@/data/profile';
+import { experiences } from '@/data/experiences';
+import { techStacks, categoryLabels, techCategories } from '@/data/tech';
+import { contacts, type ContactIcon } from '@/data/contacts';
 
-const techStacks: Record<TechCategory, { name: string; logo: string }[]> = {
-  frontend: [
-    { name: 'TypeScript', logo: '/ts-logo.svg' },
-    { name: 'React', logo: '/react-logo.svg' },
-    { name: 'Next.js', logo: '/next-logo.svg' },
-    { name: 'Tailwind', logo: '/tailwind-logo.svg' },
-  ],
-  backend: [
-    { name: 'Go', logo: '/go-logo.svg' },
-    { name: 'Scala', logo: '/scala-logo.svg' },
-    { name: 'Java', logo: '/java-logo.svg' },
-    { name: 'Spring Boot', logo: '/spring-logo.png' },
-  ],
-  database: [
-    { name: 'PostgreSQL', logo: '/pgsql-logo.svg' },
-    { name: 'Redis', logo: '/redis-logo.svg' },
-  ],
-  devops: [
-    { name: 'Docker', logo: '/docker-logo.svg' },
-    { name: 'Kubernetes', logo: '/k8s-logo.svg' },
-    { name: 'ArgoCD', logo: '/argo-logo.svg' },
-    { name: 'Terraform', logo: '/tf-logo.svg' },
-    { name: 'Gitlab CI', logo: '/gitlab-logo.svg' },
-    { name: 'Github Actions', logo: '/gh-action-logo.png' },
-  ],
-  tools: [
-    { name: 'Kafka', logo: '/kafka-logo.webp' },
-    { name: 'AWS', logo: '/aws-logo.png' },
-    { name: 'GCP', logo: '/gcp-logo.webp' },
-    { name: 'Jira', logo: '/jira-logo.webp' },
-  ],
+const contactIcons: Record<ContactIcon, typeof Linkedin> = {
+  linkedin: Linkedin,
+  github: Github,
+  mail: Mail,
+  phone: Phone,
 };
-
-const tabLabels: Record<TechCategory, string> = {
-  frontend: 'Frontend',
-  backend: 'Backend',
-  database: 'Database',
-  devops: 'DevOps',
-  tools: 'Tools & Platforms',
-};
-
-const experiences = [
-  {
-    company: 'LSEG',
-    role: 'Associate Software Engineer',
-    description: 'Built and maintain time-series data platform for financial market data',
-    logo: '/lseg-logo.png',
-  },
-  {
-    company: 'Agoda',
-    role: 'Software Engineer Intern',
-    description: 'Building flights inspector tool for visualize pricing process of flights at Agoda',
-    logo: '/agoda-logo.svg',
-  },
-  {
-    company: '100X',
-    role: 'Full Stack Developer Intern',
-    description: 'Built BFF application to bridge frontend and trading engine microservices',
-    logo: '/100x-logo.jpeg',
-  },
-];
-
-const contacts = [
-  {
-    label: 'LinkedIn',
-    value: '@kruangsuriya',
-    href: 'https://www.linkedin.com/in/kobkit-ruangsuriyakij',
-    Icon: Linkedin,
-    external: true,
-  },
-  {
-    label: 'GitHub',
-    value: '@zhunismp',
-    href: 'https://github.com/zhunismp',
-    Icon: Github,
-    external: true,
-  },
-  {
-    label: 'Email',
-    value: 'kobkit.zhun@gmail.com',
-    href: 'mailto:kobkit.zhun@gmail.com',
-    Icon: Mail,
-    external: false,
-  },
-  {
-    label: 'Phone',
-    value: '+66 61 661 6514',
-    href: 'tel:+66616616514',
-    Icon: Phone,
-    external: false,
-  },
-];
 
 function SectionHeading({ title }: { title: string }) {
   return (
@@ -108,17 +25,15 @@ function SectionHeading({ title }: { title: string }) {
 }
 
 function TechStack() {
-  const categories = Object.keys(techStacks) as TechCategory[];
-
   return (
     <div className="border-t border-border">
-      {categories.map((category) => (
+      {techCategories.map((category) => (
         <div
           key={category}
           className="grid grid-cols-1 gap-4 border-b border-border py-7 md:grid-cols-[180px_1fr] md:gap-8"
         >
           <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-muted md:pt-2.5">
-            {tabLabels[category]}
+            {categoryLabels[category]}
           </h3>
           <ul className="flex flex-wrap gap-3">
             {techStacks[category].map((tech) => (
@@ -151,31 +66,21 @@ export default function Home() {
         <section className="reveal flex min-h-dvh flex-col justify-center py-20">
           <div className="max-w-3xl">
             <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-muted">
-              Software Engineer
+              {profile.eyebrow}
             </p>
             <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl">
-              Kobkit
+              {profile.nameLines[0]}
               <br />
-              Ruangsuriyakij
+              {profile.nameLines[1]}
             </h1>
             <p className="mt-8 text-lg leading-relaxed text-muted">
-              Passionate software engineer with 1+ years experience building scalable web applications
-              and distributed systems. Able to wear many hats from build to deploy.
+              {profile.bio}
             </p>
             <p className="mt-8 border-l-2 border-accent pl-5 text-base leading-relaxed text-foreground">
-              Eager to learn, fast to adapt, build at scale.
+              {profile.tagline}
             </p>
           </div>
 
-          {/* <div className="mt-16">
-            <a
-              href="#experience"
-              className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-muted transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
-            >
-              Experience
-              <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
-            </a>
-          </div> */}
         </section>
 
         {/* Experience */}
@@ -227,7 +132,7 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
-            {contacts.map(({ label, value, href, Icon, external }) => (
+            {contacts.map(({ label, value, href, icon, external }) => (
               <a
                 key={label}
                 href={href}
@@ -235,7 +140,10 @@ export default function Home() {
                 className="group flex items-center gap-4 bg-surface px-6 py-6 transition-colors hover:bg-background focus-visible:bg-background focus-visible:outline-none"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border text-foreground transition-colors group-hover:border-accent group-hover:text-accent">
-                  <Icon className="h-5 w-5" />
+                  {(() => {
+                  const Icon = contactIcons[icon];
+                  return <Icon className="h-5 w-5" />;
+                })()}
                 </span>
                 <span className="flex-1">
                   <span className="block font-mono text-xs uppercase tracking-[0.2em] text-muted">
