@@ -1,11 +1,27 @@
 name = "portfolio"
 compatibility_date = "2026-02-07"
 
-# `next build` with output: 'export' writes here. This previously pointed at
-# .vercel/output/static, the layout produced by @cloudflare/next-on-pages — a
-# package that was never in package.json, so the deploy was resolving to an
-# empty directory.
+# `next build` with output: 'export' writes the site here.
+#
+# When a wrangler.toml is present, Cloudflare Pages takes the output directory
+# from this key rather than the dashboard field.
 pages_build_output_dir = "out"
 
-# nodejs_compat is no longer needed: nothing runs on the edge, the output is
-# static files only.
+# ─────────────────────────────────────────────────────────────────────────────
+# The build COMMAND is not in this file, and not anywhere else in the repo — it
+# lives in the Cloudflare Pages dashboard, under
+# Settings -> Build & deployments. It must be:
+#
+#     Build command:            npm run build
+#     Build output directory:   out
+#
+# If it still reads `npx @cloudflare/next-on-pages@1`, the build fails: that
+# adapter runs a Vercel-style build and emits .vercel/output/static, which is
+# incompatible with output: 'export'.
+#
+# Recorded here because a build command that exists only in a dashboard is
+# invisible to anyone reading the repo.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# No compatibility_flags: the output is static files, so nothing runs on the
+# edge and nodejs_compat is not needed.
