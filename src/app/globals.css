@@ -1,67 +1,662 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════════
+   1. SCHEME-VARYING TOKENS
+   Only values that change between light and dark live in :root.
+   Radii, static shadows, fonts and the type scale are @theme literals.
+
+   NOTE: scheme-varying shadows are named --elev-* here, NOT --shadow-*.
+   Tailwind owns the --shadow-* namespace; `--shadow-md: var(--shadow-md)`
+   inside @theme would self-reference and silently break.
+   ════════════════════════════════════════════════════════════════════ */
 :root {
-  --background: #f7f6f3;
-  /* Paper / off-white */
+  color-scheme: light dark;
+
+  /* Surfaces — Apple neutral ramp */
+  --canvas: #fbfbfd;
   --surface: #ffffff;
-  --foreground: #1a1a18;
+  --surface-2: #f5f5f7;
+  --plate: #f5f5f7;
+
   /* Ink */
-  --muted: #6b6b66;
-  /* Muted text */
-  --border: #e4e2dc;
-  /* Hairline */
-  --accent: #b91c1c;
-  /* Single accent (red) */
+  --ink: #1d1d1f;
+  --ink-muted: #6e6e73;
+  --ink-faint: #a1a1a6;
+
+  /* Hairlines */
+  --separator: rgba(0, 0, 0, 0.08);
+  --separator-strong: rgba(0, 0, 0, 0.16);
+
+  /* Accent — INTERACTIVE ONLY (links, pill, focus ring, hero eyebrow) */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-ink: #ffffff;
+
+  /* Glass — heavy weight: structural chrome (nav only) */
+  --glass-heavy-bg: rgba(251, 251, 253, 0.72);
+  --glass-heavy-blur: 20px;
+  --glass-heavy-saturate: 180%;
+  --glass-heavy-highlight: rgba(255, 255, 255, 0.6);
+
+  /* Glass — light weight: small chips over MEDIA only */
+  --glass-light-bg: rgba(255, 255, 255, 0.55);
+  --glass-light-blur: 12px;
+  --glass-light-saturate: 160%;
+
+  /* Scroll-edge mask */
+  --glass-edge-blur: 6px;
+  --glass-edge-height: 1.5rem;
+
+  /* Elevation — soft, low-alpha, y-biased */
+  --elev-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --elev-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --elev-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --elev-nav: 0 1px 24px rgba(0, 0, 0, 0.06);
+
+  /* Chrome metrics */
+  --nav-h: 52px;
+
+  /* Marquee. One set travels --marquee-duration; the track is 4 sets wide, so
+     the animation moves 25% of it. ~30px/s reads as a slow drift. */
+  --marquee-duration: 32s;
+  --marquee-gap: 1.25rem;
+  --marquee-card-w: 300px;
+  /* Fixed, not a percentage: 6% of a phone viewport swallowed the first word of
+     every card's role line, while 6% of a desktop one was barely visible. */
+  --marquee-fade: 1.75rem;
+
+  /* Approximates a critically damped spring for CSS-driven hover states. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #000000;
+    --surface: #1d1d1f;
+    --surface-2: #161617;
+    /* Plate stays LIGHT so black/unfilled logos survive on #000 */
+    --plate: #dedee3;
+
+    --ink: #f5f5f7;
+    --ink-muted: #86868b;
+    --ink-faint: #6e6e73;
+
+    --separator: rgba(255, 255, 255, 0.1);
+    --separator-strong: rgba(255, 255, 255, 0.18);
+
+    --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --accent-ink: #ffffff;
+
+    --glass-heavy-bg: rgba(0, 0, 0, 0.72);
+    --glass-heavy-highlight: rgba(255, 255, 255, 0.08);
+    --glass-light-bg: rgba(28, 28, 30, 0.55);
+
+    /* Drop shadows are near-invisible on #000. Substitute a hairline ring so
+       consumers get the correct depth MECHANISM per scheme, not a dead value. */
+    --elev-card: 0 0 0 1px var(--separator);
+    --elev-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+    --elev-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
+    --elev-nav: 0 1px 0 var(--separator);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   2. THEME BRIDGE
+   `inline` is load-bearing: it makes bg-canvas emit
+   `background-color: var(--canvas)` resolved at the element rather than
+   snapshotting the light hex. Without it dark mode does nothing.
+   ════════════════════════════════════════════════════════════════════ */
 @theme inline {
-  --color-background: var(--background);
+  --color-canvas: var(--canvas);
   --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-surface-2: var(--surface-2);
+  --color-plate: var(--plate);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-separator: var(--separator);
+  --color-separator-strong: var(--separator-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
 
-  --font-sans: var(--font-space);
-  --font-display: var(--font-archivo);
-  --font-mono: var(--font-mono);
+  /* Fonts. -apple-system first: Safari maps it through SF's optical-sizing
+     switch (SF Pro Text < 20px, SF Pro Display above) automatically. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* ── Type scale: tracking and leading are size-specific.
+        Negative tracking as size grows, positive at small sizes. ── */
+  --text-display: clamp(2.75rem, 8vw, 5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.032em;
+  --text-display--font-weight: 600;
+
+  --text-h1: clamp(2rem, 5vw, 3rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: clamp(1.5rem, 3.2vw, 2.25rem);
+  --text-h2--line-height: 1.12;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.012em;
+  --text-h3--font-weight: 600;
+
+  --text-body-lg: clamp(1.0625rem, 1.6vw, 1.3125rem);
+  --text-body-lg--line-height: 1.5;
+  --text-body-lg--letter-spacing: -0.008em;
+  --text-body-lg--font-weight: 400;
+
+  /* 17px — Apple's canonical body size */
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.53;
+  --text-body--letter-spacing: -0.004em;
+  --text-body--font-weight: 400;
+
+  --text-caption: 0.9375rem;
+  --text-caption--line-height: 1.47;
+  --text-caption--letter-spacing: 0em;
+
+  --text-footnote: 0.8125rem;
+  --text-footnote--line-height: 1.38;
+  --text-footnote--letter-spacing: 0.004em;
+
+  /* Mono eyebrow. 0.08em, not the 0.3em of the old editorial design. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.08em;
+  --text-label--font-weight: 500;
+
+  /* Radii — scheme-invariant, so literals here only */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 980px;
+
+  /* Shadows — bridged from the scheme-varying --elev-* set */
+  --shadow-card: var(--elev-card);
+  --shadow-md: var(--elev-md);
+  --shadow-lg: var(--elev-lg);
+  --shadow-nav: var(--elev-nav);
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   3. BASE
+   ════════════════════════════════════════════════════════════════════ */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-space), -apple-system, BlinkMacSystemFont, sans-serif;
-  min-height: 100dvh;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* Respect the user's text-size setting rather than pinning a px value */
+  font-size: 100%;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
 }
 
-/* Subtle, single-purpose section reveal */
-@keyframes fadeInUp {
+/* Anchor targets clear the sticky nav */
+[id] {
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   4. GLASS CHROME
+   Glass appears in exactly one place: the nav. Cards, chips and the stats
+   band sit on --canvas, a flat colour — blurring a flat colour returns the
+   same flat colour, so frosting them would cost a compositing layer and a
+   per-frame backdrop blur for no visual gain.
+   ════════════════════════════════════════════════════════════════════ */
+.glass-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+  /* Own compositing layer: keeps the per-frame backdrop blur off the main
+     thread's repaint path so it does not re-rasterise the viewport on scroll. */
+  transform: translate3d(0, 0, 0);
+}
+
+.glass-nav__material {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-heavy-bg);
+  -webkit-backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
+  backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
+  /* A bright TOP edge — light catching the material from above, which for a
+     top nav is the lit face. Not a bottom border; that job belongs to the mask. */
+  box-shadow: inset 0 1px 0 var(--glass-heavy-highlight), var(--elev-nav);
+}
+
+/* Scroll-edge effect rather than a 1px divider: content fades where it meets
+   the floating chrome. */
+.glass-nav__edge {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: var(--glass-edge-height);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--glass-edge-blur));
+  backdrop-filter: blur(var(--glass-edge-blur));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+/* The light glass weight. Only legitimate consumer is a caption chip over a
+   project screenshot, where the backdrop is opaque media, so it is not a stack. */
+.glass-light {
+  background: var(--glass-light-bg);
+  -webkit-backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
+  backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-nav__material {
+    background: var(--canvas);
+  }
+
+  .glass-light {
+    background: var(--surface);
+  }
+
+  .glass-nav__edge {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   5. EXPERIENCE MARQUEE + CARD
+   ════════════════════════════════════════════════════════════════════ */
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  /* Cards fade at the edges instead of being sliced by the container, so the
+     track reads as continuing past the frame rather than being cut off. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  /* No gap here, deliberately. A gap between the four sets is not part of any
+     set's width, so translating by a percentage of the track would land short
+     of one set and the loop would jump a few pixels every cycle. Each set
+     carries its own trailing gap instead, which makes one set exactly 25% of a
+     four-set track no matter how many cards it holds. */
+  gap: 0;
+  /* linear is not a stylistic choice — any easing on a loop makes the track
+     visibly surge and slow once per cycle. */
+  animation: marquee-slide var(--marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+/* Pause so the details are readable. Without this the card slides away while
+   you are still reading the description you hovered to reveal. */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__set {
+  display: flex;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
+}
+
+.marquee__item {
+  flex: 0 0 auto;
+  width: var(--marquee-card-w);
+}
+
+@keyframes marquee-slide {
   from {
-    opacity: 0;
-    transform: translateY(16px);
+    transform: translate3d(0, 0, 0);
   }
 
   to {
-    opacity: 1;
-    transform: translateY(0);
+    /* Exactly one set of four. The frame after the reset is identical to the
+       frame before it, which is what makes the loop seamless. */
+    transform: translate3d(-25%, 0, 0);
   }
 }
 
-.reveal {
-  animation: fadeInUp 0.5s ease-out both;
+/* ── Card: logo at rest, details on hover ── */
+.exp-card {
+  position: relative;
+  display: flex;
+  height: 15rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 1.25rem;
+  box-shadow: var(--elev-card);
+  transition: box-shadow 300ms var(--ease-spring);
 }
 
+.exp-card__logo {
+  transition: transform 420ms var(--ease-spring);
+}
+
+.exp-card__info {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  text-align: center;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition:
+    opacity 300ms var(--ease-spring),
+    transform 420ms var(--ease-spring);
+}
+
+/* Hover behaviour is gated on the device actually having hover. */
+@media (hover: hover) {
+  .exp-card:hover {
+    box-shadow: var(--elev-md);
+  }
+
+  .exp-card:hover .exp-card__logo {
+    /* Shrinks and rises, rather than fading out: the logo stays the same
+       object, so hover restructures the card instead of replacing it. */
+    transform: translate3d(0, -3.5rem, 0) scale(0.5);
+  }
+
+  .exp-card:hover .exp-card__info {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* No hover available — a touch user cannot reveal anything, so the card ships
+   in its revealed state permanently. */
+@media (hover: none) {
+  .exp-card {
+    justify-content: flex-start;
+  }
+
+  .exp-card__logo {
+    transform: scale(0.5);
+  }
+
+  .exp-card__info {
+    position: static;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   6. ACCESSIBILITY PREFERENCES
+   Three independent signals, each with a real fallback rather than a
+   blanket override.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Reduced motion ──
+   Deliberately NOT the blanket `* { transition-duration: .01ms !important }`
+   reset. Reduced motion means a gentler, non-vestibular equivalent — not the
+   removal of all feedback. A contact row that gives no response at all on
+   press is a regression, not an accommodation. So: transforms and springs go,
+   colour and opacity cross-fades stay. useReducedMotion() in JS is
+   authoritative; these rules cover the no-hydration window. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  .reveal {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .skip-link {
+    transition: none;
+  }
+
+}
+
+/* ── Static fallback: no marquee ──
+   Two independent reasons to drop the sliding track, so the rules are shared.
+
+   Reduced motion: a slow perpetual loop is the clearest single thing this
+   preference exists to stop, so the marquee is replaced rather than eased.
+
+   Narrow viewports: only about one card fits, so sliding means waiting to see
+   the other two; there is no hover to reveal details with, so they are already
+   shown; and the edge fade eats a meaningful fraction of a phone's width.
+   Stacking is strictly better there. */
+@media (prefers-reduced-motion: reduce), (max-width: 39.99rem) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow: visible;
+  }
+
+  .marquee__track {
     animation: none;
+    display: grid;
+    width: 100%;
+    gap: var(--marquee-gap);
+  }
+
+  /* Clones are removed from layout, not just hidden, so the remaining set is
+     the only thing the grid has to place. */
+  .marquee__set[aria-hidden='true'] {
+    display: none;
+  }
+
+  .marquee__set {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--marquee-gap);
+    padding-right: 0;
+  }
+
+  .marquee__item {
+    width: auto;
+  }
+
+  .exp-card {
+    height: auto;
+    min-height: 15rem;
+    justify-content: flex-start;
+  }
+
+  .exp-card__logo,
+  .exp-card__info {
+    transition: none;
+  }
+
+  .exp-card__logo {
+    transform: scale(0.5);
+  }
+
+  .exp-card__info {
+    position: static;
+    opacity: 1;
+    transform: none;
   }
 }
+
+/* With motion reduced but room to spare, keep the original three-up grid. */
+@media (prefers-reduced-motion: reduce) and (min-width: 40rem) {
+  .marquee__set {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    /* Transitions are narrowed, not killed: the properties that aid
+       comprehension survive. */
+    transition-property: background-color, border-color, color, opacity, box-shadow;
+    transition-duration: 150ms;
+  }
+}
+
+/* ── Reduced transparency ──
+   Overriding the glass TOKENS is why every glass property is a token: one
+   block turns every translucent surface solid, with no per-selector
+   duplication and no chance of missing one. The only extra rules swap the
+   fade mask for an honest hairline, because with no blur there is no
+   material left to fade. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-heavy-bg: var(--canvas);
+    --glass-heavy-blur: 0px;
+    --glass-heavy-saturate: 100%;
+    --glass-light-bg: var(--surface);
+    --glass-light-blur: 0px;
+    --glass-light-saturate: 100%;
+    --glass-edge-blur: 0px;
+  }
+
+  .glass-nav__material {
+    box-shadow: 0 1px 0 var(--separator), var(--elev-card);
+  }
+
+  .glass-nav__edge {
+    display: none;
+  }
+}
+
+/* ── Increased contrast ──
+   --ink-muted at #6e6e73 on #fbfbfd is 4.9:1 — it passes AA for body text but
+   has no headroom, which is exactly what this query is for. #3a3a3c is 10.3:1. */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-muted: #3a3a3c;
+    --ink-faint: #48484a;
+    --separator: rgba(0, 0, 0, 0.35);
+    --separator-strong: rgba(0, 0, 0, 0.55);
+    --accent: #0040dd;
+    --glass-heavy-bg: var(--canvas);
+    --glass-heavy-blur: 0px;
+  }
+
+  .glass-nav__material,
+  .glass-nav__edge {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .glass-nav__edge {
+    display: none;
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --ink-muted: #d1d1d6;
+    --ink-faint: #aeaeb2;
+    --separator: rgba(255, 255, 255, 0.4);
+    --separator-strong: rgba(255, 255, 255, 0.65);
+    --accent: #4da3ff;
+  }
+}
+
+/* Windows High Contrast ignores backdrop-filter entirely, which would leave
+   the nav labels floating over page content with nothing behind them. */
+@media (forced-colors: active) {
+  .glass-nav__material {
+    background: Canvas;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .glass-nav__edge {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   7. FOCUS
+   `outline`, not `box-shadow`. A box-shadow halo is prettier, but the
+   contact grid must be overflow-hidden for its hairlines to clip at the
+   rounded corners — and overflow:hidden clips box-shadows while outline
+   still paints. Two of the keyboard-reachable groups sit inside that
+   clipping container, so outline wins on correctness.
+   ════════════════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+/* Inset, or the ring is clipped by the grid's overflow-hidden. */
+.contact-row:focus-visible {
+  outline-offset: -3px;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   8. UTILITIES
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Visually hidden but announced. Used for landmark-naming headings. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip link — required now that a sticky header precedes all content. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 60;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: var(--elev-lg);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
