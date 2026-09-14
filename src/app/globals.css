@@ -56,17 +56,12 @@
   /* Chrome metrics */
   --nav-h: 52px;
 
-  /* Marquee. One set travels --marquee-duration; the track is 4 sets wide, so
-     the animation moves 25% of it. ~30px/s reads as a slow drift. */
-  --marquee-duration: 32s;
-  --marquee-gap: 1.25rem;
-  --marquee-card-w: 300px;
-  /* Fixed, not a percentage: 6% of a phone viewport swallowed the first word of
-     every card's role line, while 6% of a desktop one was barely visible. */
-  --marquee-fade: 1.75rem;
-
-  /* Approximates a critically damped spring for CSS-driven hover states. */
-  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  /* ── Legacy aliases: keep page.tsx compiling through phases 1-3.
+        DELETE IN PHASE 7. ── */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --muted: var(--ink-muted);
+  --border: var(--separator);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -121,12 +116,21 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
 
+  /* Legacy colour aliases — DELETE IN PHASE 7 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
   /* Fonts. -apple-system first: Safari maps it through SF's optical-sizing
      switch (SF Pro Text < 20px, SF Pro Display above) automatically. */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
     "Segoe UI", Roboto, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
+  /* Legacy: page.tsx uses font-display. DELETE IN PHASE 7. */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
 
   /* ── Type scale: tracking and leading are size-specific.
         Negative tracking as size grows, positive at small sizes. ── */
@@ -215,129 +219,9 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   4. GLASS CHROME
-   Glass appears in exactly one place: the nav. Cards, chips and the stats
-   band sit on --canvas, a flat colour — blurring a flat colour returns the
-   same flat colour, so frosting them would cost a compositing layer and a
-   per-frame backdrop blur for no visual gain.
+   4. LEGACY MOTION — page.tsx still uses .reveal. DELETE IN PHASE 7.
    ════════════════════════════════════════════════════════════════════ */
-.glass-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: var(--nav-h);
-  /* Own compositing layer: keeps the per-frame backdrop blur off the main
-     thread's repaint path so it does not re-rasterise the viewport on scroll. */
-  transform: translate3d(0, 0, 0);
-}
-
-.glass-nav__material {
-  position: absolute;
-  inset: 0;
-  background: var(--glass-heavy-bg);
-  -webkit-backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
-  backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
-  /* A bright TOP edge — light catching the material from above, which for a
-     top nav is the lit face. Not a bottom border; that job belongs to the mask. */
-  box-shadow: inset 0 1px 0 var(--glass-heavy-highlight), var(--elev-nav);
-}
-
-/* Scroll-edge effect rather than a 1px divider: content fades where it meets
-   the floating chrome. */
-.glass-nav__edge {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  left: 0;
-  height: var(--glass-edge-height);
-  pointer-events: none;
-  -webkit-backdrop-filter: blur(var(--glass-edge-blur));
-  backdrop-filter: blur(var(--glass-edge-blur));
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-}
-
-/* The light glass weight. Only legitimate consumer is a caption chip over a
-   project screenshot, where the backdrop is opaque media, so it is not a stack. */
-.glass-light {
-  background: var(--glass-light-bg);
-  -webkit-backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
-  backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass-nav__material {
-    background: var(--canvas);
-  }
-
-  .glass-light {
-    background: var(--surface);
-  }
-
-  .glass-nav__edge {
-    display: none;
-  }
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   5. EXPERIENCE MARQUEE + CARD
-   ════════════════════════════════════════════════════════════════════ */
-
-.marquee {
-  position: relative;
-  overflow: hidden;
-  /* Cards fade at the edges instead of being sliced by the container, so the
-     track reads as continuing past the frame rather than being cut off. */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--marquee-fade),
-    #000 calc(100% - var(--marquee-fade)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 var(--marquee-fade),
-    #000 calc(100% - var(--marquee-fade)),
-    transparent 100%
-  );
-}
-
-.marquee__track {
-  display: flex;
-  width: max-content;
-  /* No gap here, deliberately. A gap between the four sets is not part of any
-     set's width, so translating by a percentage of the track would land short
-     of one set and the loop would jump a few pixels every cycle. Each set
-     carries its own trailing gap instead, which makes one set exactly 25% of a
-     four-set track no matter how many cards it holds. */
-  gap: 0;
-  /* linear is not a stylistic choice — any easing on a loop makes the track
-     visibly surge and slow once per cycle. */
-  animation: marquee-slide var(--marquee-duration) linear infinite;
-  will-change: transform;
-}
-
-/* Pause so the details are readable. Without this the card slides away while
-   you are still reading the description you hovered to reveal. */
-.marquee:hover .marquee__track,
-.marquee:focus-within .marquee__track {
-  animation-play-state: paused;
-}
-
-.marquee__set {
-  display: flex;
-  gap: var(--marquee-gap);
-  padding-right: var(--marquee-gap);
-}
-
-.marquee__item {
-  flex: 0 0 auto;
-  width: var(--marquee-card-w);
-}
-
-@keyframes marquee-slide {
+@keyframes fadeInUp {
   from {
     transform: translate3d(0, 0, 0);
   }
