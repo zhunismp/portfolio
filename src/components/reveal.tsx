@@ -5,7 +5,7 @@ import { useRef, type ReactNode } from 'react';
 // barrel drags in the full-featured `motion` component, which references every
 // feature including drag and pan — 37 kB gz of code this site never uses.
 import * as m from 'motion/react-m';
-import { useInView, useReducedMotion } from 'motion/react';
+import { useInView } from 'motion/react';
 
 import { REVEAL_Y, spring, staggerDelay } from '@/lib/springs';
 
@@ -21,9 +21,9 @@ import { REVEAL_Y, spring, staggerDelay } from '@/lib/springs';
  * only this wrapper's JavaScript ships. No content string, no next/image and no
  * icon crosses the boundary.
  *
- * `data-reveal` is load-bearing: the noscript rule in layout.tsx and the
- * reduced-motion rule in globals.css both target it, so the content is readable
- * even if this component's JavaScript never runs.
+ * NOTE: this renders opacity 0 on the server and only becomes visible once its
+ * JavaScript runs. There is no longer a fallback for that, so if hydration never
+ * happens the wrapped content stays invisible.
  */
 export function Reveal({
   children,
@@ -44,28 +44,17 @@ export function Reveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
   const inView = useInView(ref, {
     once: true,
     amount: 0.25,
     margin: '0px 0px -10% 0px',
   });
 
-  // Reduced motion gets instant static content, not a slower fade.
-  if (reduceMotion) {
-    return (
-      <div ref={ref} data-reveal className={className}>
-        {children}
-      </div>
-    );
-  }
-
   const visible = immediate || inView;
 
   return (
     <m.div
       ref={ref}
-      data-reveal
       className={className}
       initial={{ opacity: 0, y }}
       animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y }}

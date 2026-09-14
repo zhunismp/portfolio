@@ -41,7 +41,7 @@ export function Hero() {
             <PressLink
               href={`#${site.sectionIds.contact}`}
               scale={0.97}
-              className="inline-flex h-11 items-center rounded-pill bg-accent px-6 text-body font-medium text-accent-ink transition-colors hover:bg-accent-hover"
+              className="cta-pill inline-flex h-11 items-center rounded-pill bg-accent px-6 text-body font-medium text-accent-ink transition-colors hover:bg-accent-hover"
             >
               Get in touch
             </PressLink>
@@ -52,7 +52,6 @@ export function Hero() {
               See my work
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-                aria-hidden="true"
               />
             </Link>
           </div>

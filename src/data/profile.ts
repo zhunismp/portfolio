@@ -9,4 +9,13 @@ export const profile = {
   tagline: 'Eager to learn, fast to adapt, build at scale.',
   /** Literal, not derivable from the experience list. */
   yearsExperience: '1+',
+
+  /**
+   * Closing card content.
+   *
+   * One string with a measure constraint rather than the hero's hard-<br>
+   * nameLines pattern: at text-h1 on a 320px viewport a forced break wraps again
+   * anyway, so the break would fight the layout instead of controlling it.
+   */
+  closingHeadline: 'Let’s build something at scale.',
 } as const;

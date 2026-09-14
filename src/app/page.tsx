@@ -4,7 +4,7 @@ import { Section } from '@/components/section';
 import { StatsBand } from '@/components/stats-band';
 import { ExperienceMarquee } from '@/components/experience-marquee';
 import { TechStack } from '@/components/tech-stack';
-import { ContactGrid } from '@/components/contact-grid';
+import { ContactCta } from '@/components/contact-cta';
 import { profile } from '@/data/profile';
 import { site } from '@/data/site';
 
@@ -13,11 +13,14 @@ export default function Home() {
     <div className={site.container}>
       <Hero />
 
-      <Section id="stats" title="At a glance" srOnlyTitle>
+      {/* No heading. The old one existed only to name the landmark and was
+          visually hidden; giving it a visible heading now would be a design
+          change nobody asked for, so the band stands on its own. */}
+      <section id="stats" className="py-20 md:py-24">
         <Reveal>
           <StatsBand />
         </Reveal>
-      </Section>
+      </section>
 
       <Section id={site.sectionIds.about} title="How I work">
         <Reveal className="grid gap-6 md:grid-cols-[180px_1fr] md:gap-8">
@@ -39,18 +42,14 @@ export default function Home() {
       <Section
         id={site.sectionIds.techStack}
         title="What I build with"
-        subcopy="The tools I reach for, grouped by where they sit in the stack."
+        subcopy="The tools I have experienced with."
       >
         <TechStack />
       </Section>
 
-      <Section
-        id={site.sectionIds.contact}
-        title="Get in touch"
-        subcopy="The fastest ways to reach me."
-      >
-        <ContactGrid />
-      </Section>
+      {/* Renders its own <section> — see the comment in contact-cta.tsx for why
+          this one does not use <Section>. */}
+      <ContactCta />
     </div>
   );
 }

@@ -40,16 +40,14 @@ export function SiteNav() {
       <m.div
         className="glass-nav__material"
         style={{ opacity: materialOpacity }}
-        aria-hidden="true"
       />
       <m.div
         className="glass-nav__edge"
         style={{ opacity: materialOpacity }}
-        aria-hidden="true"
       />
 
       <nav
-        aria-label="Primary"
+       
         className={`${site.container} relative flex h-[var(--nav-h)] items-center justify-between gap-4`}
       >
         <Link
@@ -67,7 +65,6 @@ export function SiteNav() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  aria-current={active ? 'page' : undefined}
                   className={
                     active
                       ? /* Opaque fill, not a lighter frosted pill. A translucent

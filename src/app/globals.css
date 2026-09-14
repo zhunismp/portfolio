@@ -1,45 +1,52 @@
 @import "tailwindcss";
 
 /* ════════════════════════════════════════════════════════════════════
-   1. SCHEME-VARYING TOKENS
-   Only values that change between light and dark live in :root.
-   Radii, static shadows, fonts and the type scale are @theme literals.
+   1. RUNTIME TOKENS
+   This site is dark only. Radii, static shadows, fonts and the type scale
+   are @theme literals; everything a component might need to resolve at the
+   element lives here.
 
-   NOTE: scheme-varying shadows are named --elev-* here, NOT --shadow-*.
+   NOTE: shadows are named --elev-* here, NOT --shadow-*.
    Tailwind owns the --shadow-* namespace; `--shadow-md: var(--shadow-md)`
    inside @theme would self-reference and silently break.
    ════════════════════════════════════════════════════════════════════ */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
   /* Surfaces — Apple neutral ramp */
-  --canvas: #fbfbfd;
-  --surface: #ffffff;
-  --surface-2: #f5f5f7;
-  --plate: #f5f5f7;
+  --canvas: #000000;
+  --surface: #1d1d1f;
+  --surface-2: #161617;
+  /* Plate stays LIGHT, deliberately. It is the backing that keeps black and
+     unfilled brand logos visible on #000: next-logo.svg carries no fill
+     attribute at all, kafka-logo.webp is black, and 100x-logo.jpeg has an
+     RGB(8,8,8) background baked into the pixels that cannot be made
+     transparent. There is no longer a light scheme to contrast this against,
+     so this comment is the only thing marking it as intentional. */
+  --plate: #dedee3;
 
   /* Ink */
-  --ink: #1d1d1f;
-  --ink-muted: #6e6e73;
-  --ink-faint: #a1a1a6;
+  --ink: #f5f5f7;
+  --ink-muted: #86868b;
+  --ink-faint: #6e6e73;
 
   /* Hairlines */
-  --separator: rgba(0, 0, 0, 0.08);
-  --separator-strong: rgba(0, 0, 0, 0.16);
+  --separator: rgba(255, 255, 255, 0.1);
+  --separator-strong: rgba(255, 255, 255, 0.18);
 
-  /* Accent — INTERACTIVE ONLY (links, pill, focus ring, hero eyebrow) */
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
+  /* Accent — INTERACTIVE ONLY (links, pill, hero eyebrow) */
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
   --accent-ink: #ffffff;
 
   /* Glass — heavy weight: structural chrome (nav only) */
-  --glass-heavy-bg: rgba(251, 251, 253, 0.72);
+  --glass-heavy-bg: rgba(0, 0, 0, 0.72);
   --glass-heavy-blur: 20px;
   --glass-heavy-saturate: 180%;
-  --glass-heavy-highlight: rgba(255, 255, 255, 0.6);
+  --glass-heavy-highlight: rgba(255, 255, 255, 0.08);
 
   /* Glass — light weight: small chips over MEDIA only */
-  --glass-light-bg: rgba(255, 255, 255, 0.55);
+  --glass-light-bg: rgba(28, 28, 30, 0.55);
   --glass-light-blur: 12px;
   --glass-light-saturate: 160%;
 
@@ -47,11 +54,14 @@
   --glass-edge-blur: 6px;
   --glass-edge-height: 1.5rem;
 
-  /* Elevation — soft, low-alpha, y-biased */
-  --elev-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --elev-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --elev-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --elev-nav: 0 1px 24px rgba(0, 0, 0, 0.06);
+  /* Elevation. A drop shadow is invisible against #000, so --elev-card switches
+     the depth MECHANISM to a hairline ring rather than shipping a dead value.
+     The larger two keep real shadows because they sit under bigger surfaces
+     where the spread still reads. */
+  --elev-card: 0 0 0 1px var(--separator);
+  --elev-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+  --elev-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
+  --elev-nav: 0 1px 0 var(--separator);
 
   /* Chrome metrics */
   --nav-h: 52px;
@@ -69,37 +79,6 @@
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #000000;
-    --surface: #1d1d1f;
-    --surface-2: #161617;
-    /* Plate stays LIGHT so black/unfilled logos survive on #000 */
-    --plate: #dedee3;
-
-    --ink: #f5f5f7;
-    --ink-muted: #86868b;
-    --ink-faint: #6e6e73;
-
-    --separator: rgba(255, 255, 255, 0.1);
-    --separator-strong: rgba(255, 255, 255, 0.18);
-
-    --accent: #0a84ff;
-    --accent-hover: #409cff;
-    --accent-ink: #ffffff;
-
-    --glass-heavy-bg: rgba(0, 0, 0, 0.72);
-    --glass-heavy-highlight: rgba(255, 255, 255, 0.08);
-    --glass-light-bg: rgba(28, 28, 30, 0.55);
-
-    /* Drop shadows are near-invisible on #000. Substitute a hairline ring so
-       consumers get the correct depth MECHANISM per scheme, not a dead value. */
-    --elev-card: 0 0 0 1px var(--separator);
-    --elev-md: 0 4px 16px rgba(0, 0, 0, 0.55);
-    --elev-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
-    --elev-nav: 0 1px 0 var(--separator);
-  }
-}
 
 /* ════════════════════════════════════════════════════════════════════
    2. THEME BRIDGE
@@ -419,45 +398,15 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   6. ACCESSIBILITY PREFERENCES
-   Three independent signals, each with a real fallback rather than a
-   blanket override.
+   6. NARROW-VIEWPORT FALLBACK
    ════════════════════════════════════════════════════════════════════ */
 
-/* ── Reduced motion ──
-   Deliberately NOT the blanket `* { transition-duration: .01ms !important }`
-   reset. Reduced motion means a gentler, non-vestibular equivalent — not the
-   removal of all feedback. A contact row that gives no response at all on
-   press is a regression, not an accommodation. So: transforms and springs go,
-   colour and opacity cross-fades stay. useReducedMotion() in JS is
-   authoritative; these rules cover the no-hydration window. */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .skip-link {
-    transition: none;
-  }
-
-}
-
-/* ── Static fallback: no marquee ──
-   Two independent reasons to drop the sliding track, so the rules are shared.
-
-   Reduced motion: a slow perpetual loop is the clearest single thing this
-   preference exists to stop, so the marquee is replaced rather than eased.
-
-   Narrow viewports: only about one card fits, so sliding means waiting to see
-   the other two; there is no hover to reveal details with, so they are already
-   shown; and the edge fade eats a meaningful fraction of a phone's width.
-   Stacking is strictly better there. */
-@media (prefers-reduced-motion: reduce), (max-width: 39.99rem) {
+/* ── Static fallback: no marquee on narrow viewports ──
+   Only about one card fits, so sliding means waiting to see the other two;
+   there is no hover to reveal details with, so they are already shown; and the
+   edge fade eats a meaningful fraction of a phone's width. Stacking is strictly
+   better there. */
+@media (max-width: 39.99rem) {
   .marquee {
     -webkit-mask-image: none;
     mask-image: none;
@@ -472,8 +421,10 @@ body {
   }
 
   /* Clones are removed from layout, not just hidden, so the remaining set is
-     the only thing the grid has to place. */
-  .marquee__set[aria-hidden='true'] {
+     the only thing the grid has to place. Keyed on data-clone: the marquee used
+     to mark them aria-hidden and this selector rode along on that, which meant
+     dropping the attribute would silently stack all four sets — 12 cards. */
+  .marquee__set[data-clone] {
     display: none;
   }
 
@@ -511,152 +462,6 @@ body {
   }
 }
 
-/* With motion reduced but room to spare, keep the original three-up grid. */
-@media (prefers-reduced-motion: reduce) and (min-width: 40rem) {
-  .marquee__set {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    /* Transitions are narrowed, not killed: the properties that aid
-       comprehension survive. */
-    transition-property: background-color, border-color, color, opacity, box-shadow;
-    transition-duration: 150ms;
-  }
-}
-
-/* ── Reduced transparency ──
-   Overriding the glass TOKENS is why every glass property is a token: one
-   block turns every translucent surface solid, with no per-selector
-   duplication and no chance of missing one. The only extra rules swap the
-   fade mask for an honest hairline, because with no blur there is no
-   material left to fade. */
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass-heavy-bg: var(--canvas);
-    --glass-heavy-blur: 0px;
-    --glass-heavy-saturate: 100%;
-    --glass-light-bg: var(--surface);
-    --glass-light-blur: 0px;
-    --glass-light-saturate: 100%;
-    --glass-edge-blur: 0px;
-  }
-
-  .glass-nav__material {
-    box-shadow: 0 1px 0 var(--separator), var(--elev-card);
-  }
-
-  .glass-nav__edge {
-    display: none;
-  }
-}
-
-/* ── Increased contrast ──
-   --ink-muted at #6e6e73 on #fbfbfd is 4.9:1 — it passes AA for body text but
-   has no headroom, which is exactly what this query is for. #3a3a3c is 10.3:1. */
-@media (prefers-contrast: more) {
-  :root {
-    --ink-muted: #3a3a3c;
-    --ink-faint: #48484a;
-    --separator: rgba(0, 0, 0, 0.35);
-    --separator-strong: rgba(0, 0, 0, 0.55);
-    --accent: #0040dd;
-    --glass-heavy-bg: var(--canvas);
-    --glass-heavy-blur: 0px;
-  }
-
-  .glass-nav__material,
-  .glass-nav__edge {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .glass-nav__edge {
-    display: none;
-  }
-}
-
-@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
-  :root {
-    --ink-muted: #d1d1d6;
-    --ink-faint: #aeaeb2;
-    --separator: rgba(255, 255, 255, 0.4);
-    --separator-strong: rgba(255, 255, 255, 0.65);
-    --accent: #4da3ff;
-  }
-}
-
-/* Windows High Contrast ignores backdrop-filter entirely, which would leave
-   the nav labels floating over page content with nothing behind them. */
-@media (forced-colors: active) {
-  .glass-nav__material {
-    background: Canvas;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .glass-nav__edge {
-    display: none;
-  }
-}
-
 /* ════════════════════════════════════════════════════════════════════
-   7. FOCUS
-   `outline`, not `box-shadow`. A box-shadow halo is prettier, but the
-   contact grid must be overflow-hidden for its hairlines to clip at the
-   rounded corners — and overflow:hidden clips box-shadows while outline
-   still paints. Two of the keyboard-reachable groups sit inside that
-   clipping container, so outline wins on correctness.
+   7. UTILITIES
    ════════════════════════════════════════════════════════════════════ */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: inherit;
-}
-
-/* Inset, or the ring is clipped by the grid's overflow-hidden. */
-.contact-row:focus-visible {
-  outline-offset: -3px;
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   8. UTILITIES
-   ════════════════════════════════════════════════════════════════════ */
-
-/* Visually hidden but announced. Used for landmark-naming headings. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Skip link — required now that a sticky header precedes all content. */
-.skip-link {
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 60;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  padding: 0.5rem 1rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--ink);
-  box-shadow: var(--elev-lg);
-  transform: translateY(-200%);
-}
-
-.skip-link:focus-visible {
-  transform: translateY(0);
-}
-

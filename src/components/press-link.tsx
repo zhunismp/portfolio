@@ -1,8 +1,8 @@
 'use client';
 
 import * as m from 'motion/react-m';
-import { useReducedMotion, type HTMLMotionProps } from 'motion/react';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { HTMLMotionProps } from 'motion/react';
+import type { ReactNode } from 'react';
 
 /** motion allows a MotionValue as children; this component only ever takes nodes. */
 type PressLinkProps = Omit<HTMLMotionProps<'a'>, 'children'> & {
@@ -30,17 +30,6 @@ export function PressLink({
   children,
   ...props
 }: PressLinkProps) {
-  const reduceMotion = useReducedMotion();
-
-  // Reduced motion keeps the feedback but drops the transform — a row that gives
-  // no response at all on press would be a regression, not an accommodation.
-  if (reduceMotion) {
-    // Cast is safe: with motion's animation props unused, what remains is a
-    // plain anchor. motion's prop type is a superset of React's, and the two
-    // disagree only on onDrag, which this component never receives.
-    return <a {...(props as ComponentPropsWithoutRef<'a'>)}>{children}</a>;
-  }
-
   return (
     <m.a whileTap={{ scale }} transition={spring.press} {...props}>
       {children}
