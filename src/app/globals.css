@@ -55,6 +55,18 @@
 
   /* Chrome metrics */
   --nav-h: 52px;
+
+  /* Marquee. One set travels --marquee-duration; the track is 4 sets wide, so
+     the animation moves 25% of it. ~30px/s reads as a slow drift. */
+  --marquee-duration: 32s;
+  --marquee-gap: 1.25rem;
+  --marquee-card-w: 300px;
+  /* Fixed, not a percentage: 6% of a phone viewport swallowed the first word of
+     every card's role line, while 6% of a desktop one was barely visible. */
+  --marquee-fade: 1.75rem;
+
+  /* Approximates a critically damped spring for CSS-driven hover states. */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -268,6 +280,145 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
+   5. EXPERIENCE MARQUEE + CARD
+   ════════════════════════════════════════════════════════════════════ */
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  /* Cards fade at the edges instead of being sliced by the container, so the
+     track reads as continuing past the frame rather than being cut off. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  /* No gap here, deliberately. A gap between the four sets is not part of any
+     set's width, so translating by a percentage of the track would land short
+     of one set and the loop would jump a few pixels every cycle. Each set
+     carries its own trailing gap instead, which makes one set exactly 25% of a
+     four-set track no matter how many cards it holds. */
+  gap: 0;
+  /* linear is not a stylistic choice — any easing on a loop makes the track
+     visibly surge and slow once per cycle. */
+  animation: marquee-slide var(--marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+/* Pause so the details are readable. Without this the card slides away while
+   you are still reading the description you hovered to reveal. */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__set {
+  display: flex;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
+}
+
+.marquee__item {
+  flex: 0 0 auto;
+  width: var(--marquee-card-w);
+}
+
+@keyframes marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    /* Exactly one set of four. The frame after the reset is identical to the
+       frame before it, which is what makes the loop seamless. */
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+
+/* ── Card: logo at rest, details on hover ── */
+.exp-card {
+  position: relative;
+  display: flex;
+  height: 15rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 1.25rem;
+  box-shadow: var(--elev-card);
+  transition: box-shadow 300ms var(--ease-spring);
+}
+
+.exp-card__logo {
+  transition: transform 420ms var(--ease-spring);
+}
+
+.exp-card__info {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  text-align: center;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition:
+    opacity 300ms var(--ease-spring),
+    transform 420ms var(--ease-spring);
+}
+
+/* Hover behaviour is gated on the device actually having hover. */
+@media (hover: hover) {
+  .exp-card:hover {
+    box-shadow: var(--elev-md);
+  }
+
+  .exp-card:hover .exp-card__logo {
+    /* Shrinks and rises, rather than fading out: the logo stays the same
+       object, so hover restructures the card instead of replacing it. */
+    transform: translate3d(0, -3.5rem, 0) scale(0.5);
+  }
+
+  .exp-card:hover .exp-card__info {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* No hover available — a touch user cannot reveal anything, so the card ships
+   in its revealed state permanently. */
+@media (hover: none) {
+  .exp-card {
+    justify-content: flex-start;
+  }
+
+  .exp-card__logo {
+    transform: scale(0.5);
+  }
+
+  .exp-card__info {
+    position: static;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
    6. ACCESSIBILITY PREFERENCES
    Three independent signals, each with a real fallback rather than a
    blanket override.
@@ -292,6 +443,78 @@ body {
 
   .skip-link {
     transition: none;
+  }
+
+}
+
+/* ── Static fallback: no marquee ──
+   Two independent reasons to drop the sliding track, so the rules are shared.
+
+   Reduced motion: a slow perpetual loop is the clearest single thing this
+   preference exists to stop, so the marquee is replaced rather than eased.
+
+   Narrow viewports: only about one card fits, so sliding means waiting to see
+   the other two; there is no hover to reveal details with, so they are already
+   shown; and the edge fade eats a meaningful fraction of a phone's width.
+   Stacking is strictly better there. */
+@media (prefers-reduced-motion: reduce), (max-width: 39.99rem) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow: visible;
+  }
+
+  .marquee__track {
+    animation: none;
+    display: grid;
+    width: 100%;
+    gap: var(--marquee-gap);
+  }
+
+  /* Clones are removed from layout, not just hidden, so the remaining set is
+     the only thing the grid has to place. */
+  .marquee__set[aria-hidden='true'] {
+    display: none;
+  }
+
+  .marquee__set {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--marquee-gap);
+    padding-right: 0;
+  }
+
+  .marquee__item {
+    width: auto;
+  }
+
+  .exp-card {
+    height: auto;
+    min-height: 15rem;
+    justify-content: flex-start;
+  }
+
+  .exp-card__logo,
+  .exp-card__info {
+    transition: none;
+  }
+
+  .exp-card__logo {
+    transform: scale(0.5);
+  }
+
+  .exp-card__info {
+    position: static;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* With motion reduced but room to spare, keep the original three-up grid. */
+@media (prefers-reduced-motion: reduce) and (min-width: 40rem) {
+  .marquee__set {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   *,

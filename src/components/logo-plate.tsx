@@ -19,18 +19,45 @@ export function LogoPlate({
   src,
   alt,
   size = 'md',
+  plate = true,
 }: {
   src: string;
   alt: string;
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'xl';
+  /**
+   * Set false to drop the tile and render the mark on its own. Only safe where
+   * the logo is known to be transparent, or where its opaque background reading
+   * as an icon tile is acceptable — see the rounding note below.
+   */
+  plate?: boolean;
 }) {
-  const plate = size === 'md' ? 'h-11 w-11' : 'h-7 w-7';
-  const px = size === 'md' ? 24 : 18;
+  const px = { sm: 18, md: 24, xl: 104 }[size];
+
+  if (!plate) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={px}
+        height={px}
+        /**
+         * Corners are rounded on the image itself, not on a wrapper. For a
+         * transparent PNG or SVG this is a visual no-op — there is nothing at
+         * the corners to clip. For 100x-logo.jpeg, whose near-black background
+         * is baked in and cannot be removed, it makes that background read as a
+         * deliberate icon tile instead of a stray rectangle. One generic rule,
+         * no per-file knowledge, and it still holds for a fourth logo.
+         */
+        className="shrink-0 rounded-[18%] object-contain"
+        style={{ width: px, height: px }}
+      />
+    );
+  }
+
+  const tile = { sm: 'h-7 w-7', md: 'h-11 w-11', xl: 'h-26 w-26' }[size];
 
   return (
-    <span
-      className={`${plate} flex shrink-0 items-center justify-center rounded-xs bg-plate`}
-    >
+    <span className={`${tile} flex shrink-0 items-center justify-center rounded-xs bg-plate`}>
       <Image
         src={src}
         alt={alt}
