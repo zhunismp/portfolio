@@ -2,13 +2,11 @@ import { Hero } from '@/components/hero';
 import { Reveal } from '@/components/reveal';
 import { Section } from '@/components/section';
 import { StatsBand } from '@/components/stats-band';
-import { ExperienceCard } from '@/components/experience-card';
+import { ExperienceMarquee } from '@/components/experience-marquee';
 import { TechStack } from '@/components/tech-stack';
 import { ContactGrid } from '@/components/contact-grid';
-import { experiences } from '@/data/experiences';
 import { profile } from '@/data/profile';
 import { site } from '@/data/site';
-import { REVEAL_Y_CARD } from '@/lib/springs';
 
 export default function Home() {
   return (
@@ -33,13 +31,9 @@ export default function Home() {
         title="Where I've worked"
         subcopy="Teams I've shipped production systems with."
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {experiences.map((exp, i) => (
-            <Reveal key={exp.company} index={i} y={REVEAL_Y_CARD} className="h-full">
-              <ExperienceCard {...exp} />
-            </Reveal>
-          ))}
-        </div>
+        <Reveal>
+          <ExperienceMarquee />
+        </Reveal>
       </Section>
 
       <Section
