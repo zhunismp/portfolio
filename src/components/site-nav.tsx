@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import * as m from 'motion/react-m';
-import { useScroll, useTransform } from 'motion/react';
 
 import { site } from '@/data/site';
 
@@ -23,30 +21,11 @@ import { site } from '@/data/site';
  */
 export function SiteNav() {
   const pathname = usePathname();
-  const { scrollY } = useScroll();
-
-  /**
-   * Deliberately not a spring. This is scroll-linked, so it must track the input
-   * 1:1 and continuously — a boolean "scrolled" flag plus a spring would be a
-   * discretised approximation of a value we already have exactly.
-   *
-   * Starting at 0 means the nav is fully transparent over the hero and the
-   * material only arrives once there is content passing underneath it.
-   */
-  const materialOpacity = useTransform(scrollY, [0, 24], [0, 1]);
 
   return (
     <header className="glass-nav">
-      <m.div
-        className="glass-nav__material"
-        style={{ opacity: materialOpacity }}
-        aria-hidden="true"
-      />
-      <m.div
-        className="glass-nav__edge"
-        style={{ opacity: materialOpacity }}
-        aria-hidden="true"
-      />
+      <div className="glass-nav__material" aria-hidden="true" />
+      <div className="glass-nav__edge" aria-hidden="true" />
 
       <nav
         aria-label="Primary"

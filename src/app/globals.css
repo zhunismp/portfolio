@@ -219,7 +219,72 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   4. UTILITIES
+   4. GLASS CHROME
+   Glass appears in exactly one place: the nav. Cards, chips and the stats
+   band sit on --canvas, a flat colour — blurring a flat colour returns the
+   same flat colour, so frosting them would cost a compositing layer and a
+   per-frame backdrop blur for no visual gain.
+   ════════════════════════════════════════════════════════════════════ */
+.glass-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+  /* Own compositing layer: keeps the per-frame backdrop blur off the main
+     thread's repaint path so it does not re-rasterise the viewport on scroll. */
+  transform: translate3d(0, 0, 0);
+}
+
+.glass-nav__material {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-heavy-bg);
+  -webkit-backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
+  backdrop-filter: blur(var(--glass-heavy-blur)) saturate(var(--glass-heavy-saturate));
+  /* A bright TOP edge — light catching the material from above, which for a
+     top nav is the lit face. Not a bottom border; that job belongs to the mask. */
+  box-shadow: inset 0 1px 0 var(--glass-heavy-highlight), var(--elev-nav);
+}
+
+/* Scroll-edge effect rather than a 1px divider: content fades where it meets
+   the floating chrome. */
+.glass-nav__edge {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: var(--glass-edge-height);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--glass-edge-blur));
+  backdrop-filter: blur(var(--glass-edge-blur));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+/* The light glass weight. Only legitimate consumer is a caption chip over a
+   project screenshot, where the backdrop is opaque media, so it is not a stack. */
+.glass-light {
+  background: var(--glass-light-bg);
+  -webkit-backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
+  backdrop-filter: blur(var(--glass-light-blur)) saturate(var(--glass-light-saturate));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-nav__material {
+    background: var(--canvas);
+  }
+
+  .glass-light {
+    background: var(--surface);
+  }
+
+  .glass-nav__edge {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   5. UTILITIES
    ════════════════════════════════════════════════════════════════════ */
 
 /* Visually hidden but announced. Used for landmark-naming headings. */
@@ -235,72 +300,26 @@ body {
   border-width: 0;
 }
 
-.exp-card__logo {
-  transition: transform 420ms var(--ease-spring);
+/* Skip link — required now that a sticky header precedes all content. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 60;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: var(--elev-lg);
+  transform: translateY(-200%);
 }
 
-.exp-card__info {
-  position: absolute;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  left: 1.25rem;
-  text-align: center;
-  opacity: 0;
-  transform: translate3d(0, 10px, 0);
-  transition:
-    opacity 300ms var(--ease-spring),
-    transform 420ms var(--ease-spring);
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
-/* Hover behaviour is gated on the device actually having hover. */
-@media (hover: hover) {
-  .exp-card:hover {
-    box-shadow: var(--elev-md);
-  }
-
-  .exp-card:hover .exp-card__logo {
-    /* Shrinks and rises, rather than fading out: the logo stays the same
-       object, so hover restructures the card instead of replacing it. */
-    transform: translate3d(0, -3.5rem, 0) scale(0.5);
-  }
-
-  .exp-card:hover .exp-card__info {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-/* No hover available — a touch user cannot reveal anything, so the card ships
-   in its revealed state permanently. */
-@media (hover: none) {
-  .exp-card {
-    justify-content: flex-start;
-  }
-
-  .exp-card__logo {
-    transform: scale(0.5);
-  }
-
-  .exp-card__info {
-    position: static;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   6. ACCESSIBILITY PREFERENCES
-   Three independent signals, each with a real fallback rather than a
-   blanket override.
-   ════════════════════════════════════════════════════════════════════ */
-
-/* ── Reduced motion ──
-   Deliberately NOT the blanket `* { transition-duration: .01ms !important }`
-   reset. Reduced motion means a gentler, non-vestibular equivalent — not the
-   removal of all feedback. A contact row that gives no response at all on
-   press is a regression, not an accommodation. So: transforms and springs go,
-   colour and opacity cross-fades stay. useReducedMotion() in JS is
-   authoritative; these rules cover the no-hydration window. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
